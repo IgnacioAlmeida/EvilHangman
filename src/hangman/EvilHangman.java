@@ -44,8 +44,7 @@ public class EvilHangman{
             boolean success = false;
             while(!success) {
                 try {
-                    /*TODO TA QUESTIONS: Are we going to have specs on the prog exam? In this one, is
-                    it going to be about passing the tests or also about passing console input?*/
+
                     System.out.println("Enter guess: ");
                     guess = input.next().charAt(0);
                     guess = Character.toLowerCase(guess);
@@ -69,19 +68,20 @@ public class EvilHangman{
             guesses++;
 
             //If the new key has a character, it adds it to the key in main
-//            if(guesses > 0){
-//                String temp;
-//                temp = newGame.getBiggestListKey().toString();
-//                for(int i = 0; i < temp.length(); i++){
-//                    if(temp.charAt(i) >= 'a' && temp.charAt(i) <= 'z'){
-//                        key.setCharAt(i, temp.charAt(i));
-//                    }
-//                }
-//            }
-//
-//            if(key.toString().indexOf('-') == - 1){
-//                System.out.println("You won! the word is: " + key.toString());
-//            }
+            if(guesses > 0){
+                String temp;
+                temp = newGame.getGlobalKey().toString();
+                for(int i = 0; i < temp.length(); i++){
+                    if(temp.charAt(i) >= 'a' && temp.charAt(i) <= 'z'){
+                        key.setCharAt(i, temp.charAt(i));
+                    }
+                }
+            }
+
+            if(key.toString().indexOf('-') == - 1){
+                System.out.println("You won! the word is: " + key.toString());
+                break;
+            }
             if((limitGuesses - guesses) == 0){
                 System.out.println("You lose!");
                 System.out.println("The word was: " + newGame.randomWinWord());

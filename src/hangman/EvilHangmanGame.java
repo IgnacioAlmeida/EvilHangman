@@ -7,7 +7,8 @@ import java.util.*;
 public class EvilHangmanGame implements IEvilHangmanGame{
     private Set<String> englishWords = new HashSet<String>();
     private SortedSet<Character> guessedLetters = new TreeSet<Character>();
-//    private String biggestListKey = "";
+    public String globalKey;
+
     @Override
     public void startGame(File dictionary, int wordLength) throws IOException, EmptyDictionaryException {
         Scanner scanner = new Scanner(dictionary);
@@ -29,12 +30,6 @@ public class EvilHangmanGame implements IEvilHangmanGame{
         }
 
         scanner.close();
-        //if(englishword.empty() throw new
-
-        //Prints all the words with the size given
-//        for(String s : englishWords){
-//            System.out.println(s + "\n");
-//        }
 
     }
 
@@ -133,6 +128,8 @@ public class EvilHangmanGame implements IEvilHangmanGame{
 
         //it searches for the guess character in the key
         biggestList = keyedWords.get(biggestListKey);
+        globalKey = biggestListKey;
+
         if(biggestListKey.indexOf(guess) == -1){
             System.out.printf("Sorry, there are no %s's\n\n", guess);
         }
@@ -173,7 +170,7 @@ public class EvilHangmanGame implements IEvilHangmanGame{
         return output;
     }
 
-//    public String getBiggestListKey(){
-//        return biggestListKey;
-//    }
+    public String getGlobalKey(){
+        return globalKey;
+    }
 }
