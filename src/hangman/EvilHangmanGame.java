@@ -5,14 +5,14 @@ import java.io.IOException;
 import java.util.*;
 
 public class EvilHangmanGame implements IEvilHangmanGame{
-    private Set<String> englishWords = new HashSet<String>();
-    private SortedSet<Character> guessedLetters = new TreeSet<Character>();
+    private Set<String> dictionary = new HashSet<>();
+    private SortedSet<Character> guessedLetters = new TreeSet<>();
     public String globalKey;
 
     @Override
     public void startGame(File dictionary, int wordLength) throws IOException, EmptyDictionaryException {
         Scanner scanner = new Scanner(dictionary);
-        englishWords.clear();
+        this.dictionary.clear();
         if(!scanner.hasNext()){
             throw new EmptyDictionaryException();
         }
@@ -21,11 +21,11 @@ public class EvilHangmanGame implements IEvilHangmanGame{
             EvilHangmanGame game = new EvilHangmanGame();
             String str = scanner.next();
             if (str.length() == wordLength) {
-                englishWords.add(str);
+                this.dictionary.add(str);
             }
         }
 
-        if(englishWords.size() == 0){
+        if(this.dictionary.size() == 0){
             throw new EmptyDictionaryException();
         }
 
@@ -45,15 +45,11 @@ public class EvilHangmanGame implements IEvilHangmanGame{
         }
 
         Map<String, Set<String>> keyedWords = new HashMap<>();
-        //System.out.println("Inside makeGuess function\n");
 
-        //Checks if guessed letter has been used already
-        if(guessedLetters.contains(guess)){
 
-        }
 
         //3a
-        for(String string : englishWords){
+        for(String string : dictionary){
             StringBuilder key = new StringBuilder();
 
             //Creates a key with the guessed letter for each letter in the dicctionary. Ex: Word Length 4,
@@ -64,7 +60,7 @@ public class EvilHangmanGame implements IEvilHangmanGame{
                     key.setCharAt(i, guess);
                 }
             }
-            //System.out.printf("Key: %s \n", key);
+
 
             //If that key isn't in the map, we create a set that has all the possible words that will match that key and
             //assign it as the value. Ex: Key: E--- Values: ECHO, ESSO, etc
@@ -82,43 +78,41 @@ public class EvilHangmanGame implements IEvilHangmanGame{
 
         //3b Get the largest set of possibleWords from the map
         String biggestListKey = "";
-        //Contains the set with the most words to make it harder to guess
-        Set<String> biggestList = new HashSet<>();
         for(String key : keyedWords.keySet()){
             if(biggestListKey.isEmpty()){
-                biggestListKey = key.toString();
+                biggestListKey = key;
             }
             else{
                 //Chooses the largest of the word groups
-                if(keyedWords.get(key.toString()).size() > keyedWords.get(biggestListKey).size()){
-                    biggestListKey = key.toString();
+                if(keyedWords.get(key).size() > keyedWords.get(biggestListKey).size()){
+                    biggestListKey = key;
                 }
                 //.1 If they are of the same size, it chooses the one that has the guess char the least
                 if(keyedWords.get(key.toString()).size() == keyedWords.get(biggestListKey).size()){
-                    int keyGuessedLetterCount = 0;
-                    int biggestKeyGuessedLetterCount = 0;
+                    int keyGuessedCount = 0;
+                    int biggestKeyGuessedCount = 0;
                     int keyIndexCount = 0;
                     int biggestKeyIndexCount = 0;
 
                     for(int i = 0; i < key.length(); i++){
                         if(key.charAt(i) == guess){
-                            keyGuessedLetterCount++;
+                            keyGuessedCount++;
                             keyIndexCount += i;
                         }
                         if(biggestListKey.charAt(i) == guess){
-                            biggestKeyGuessedLetterCount++;
+                            biggestKeyGuessedCount++;
                             biggestKeyIndexCount += i;
                         }
                     }
-                    if(keyGuessedLetterCount < biggestKeyGuessedLetterCount){
-                        biggestListKey = key.toString();
+                    if(keyGuessedCount < biggestKeyGuessedCount){
+                        biggestListKey = key;
                     }
 
                     //.2 if .1 is not solved, we choose the one with the rightmost guessed letter. Ex: E--E and -E-E, we
                     //chose the second
-                    if(keyGuessedLetterCount == biggestKeyGuessedLetterCount){
+                    if(keyGuessedCount == biggestKeyGuessedCount){
                         if(keyIndexCount > biggestKeyIndexCount){
-                            biggestListKey = key.toString();
+                            biggestListKey = key;
                         }
                     }
                     //if .2 is not solved, we choose the one with the next rightmost letter (repeat until group is chosen)
@@ -126,35 +120,10 @@ public class EvilHangmanGame implements IEvilHangmanGame{
             }
         }
 
-        //it searches for the guess character in the key
-        biggestList = keyedWords.get(biggestListKey);
         globalKey = biggestListKey;
+        dictionary = keyedWords.get(biggestListKey);
 
-        if(biggestListKey.indexOf(guess) == -1){
-            System.out.printf("Sorry, there are no %s's\n\n", guess);
-        }
-
-        if(biggestListKey.indexOf(guess) != -1){
-            int counter = 0;
-            for(int i = 0; i < biggestListKey.length(); i++){
-                if(biggestListKey.charAt(i) == guess){
-                    counter++;
-                }
-            }
-            System.out.printf("Yes, there is %s %s's\n\n",counter, guess);
-        }
-
-//        String lettersUsed = "Used letters: ";
-//        for(Character c : guessedLetters){
-//            lettersUsed += c + " ";
-//        }
-//        System.out.println(lettersUsed);
-//
-//        System.out.printf("Word: %s\n", biggestListKey);
-
-        englishWords = biggestList;
-
-        return biggestList;
+        return dictionary;
     }
 
     @Override
@@ -163,9 +132,9 @@ public class EvilHangmanGame implements IEvilHangmanGame{
     }
 
     public String randomWinWord(){
-        String[] randomWord = englishWords.toArray(new String[englishWords.size()]);
+        String[] randomWord = dictionary.toArray(new String[dictionary.size()]);
         Random rndm = new Random();
-        int rndmNumber = rndm.nextInt(englishWords.size());
+        int rndmNumber = rndm.nextInt(dictionary.size());
         String output = randomWord[rndmNumber];
         return output;
     }
